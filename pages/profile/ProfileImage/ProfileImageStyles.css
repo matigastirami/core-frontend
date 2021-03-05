@@ -1,0 +1,12 @@
+.profile-image {
+    border-style: dotted;
+    width: 160px;
+}
+
+.profile-image::after {
+    content: "Cambiar"
+}
+
+.profile-image:hover {
+    background-color: darkgray;
+}

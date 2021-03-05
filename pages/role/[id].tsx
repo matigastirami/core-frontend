@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import HashHistory from "../../history/HashHistory";
-import http from "../../http/genericComunication";
+//import HashHistory from "../../history/HashHistory";
+//import http from "../../http/genericComunication";
 
 import moment from "moment";
 
-//import ComboComponent from "../ComboComponent/ComboComponent";
+import AdvancedSearch from "../../components/AdvancedSearchField";
 
 const RoleCreate = () => {
   let [action, setAction] = useState("");
@@ -15,16 +15,16 @@ const RoleCreate = () => {
   let [expirationDate, setExpirationDate] = useState("");
 
   useEffect(() => {
-    let location = HashHistory.location.pathname.split("/");
-    let action = location[location.length - 1] == "new" ? "Crear" : "Modificar";
-    setAction(action);
-    setId(location[location.length - 1]);
+    //let location = HashHistory.location.pathname.split("/");
+    // let action = location[location.length - 1] == "new" ? "Crear" : "Modificar";
+    // setAction(action);
+    // setId(location[location.length - 1]);
 
     if (action == "Modificar") getRoleInfo();
   }, []);
 
   const getRoleInfo = () => {
-    http.patch("role", null, { _id: _id }, null).then(
+    /*http.patch("role", null, { _id: _id }, null).then(
       (role) => {
         setCode(role.data.code);
         setDescription(role.data.description);
@@ -35,13 +35,13 @@ const RoleCreate = () => {
         role.data.appId && setAppId(role.data.appId);
       },
       (err) => {
-        UIkit.modal.alert(err.response.data.message);
+        //UIkit.modal.alert(err.response.data.message);
       }
-    );
+    );*/
   };
 
   const handleSubmit = () => {
-    if (action == "Crear") {
+    /*if (action == "Crear") {
       http
         .post(
           "role",
@@ -99,7 +99,7 @@ const RoleCreate = () => {
             }
           }
         );
-    }
+    }*/
   };
 
   const getAppSelection = (app) => {
@@ -119,7 +119,7 @@ const RoleCreate = () => {
               className="uk-input"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              margin="normal"
+              //margin="normal"
               required
             />
           </div>
@@ -133,7 +133,7 @@ const RoleCreate = () => {
               className="uk-input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              margin="normal"
+              //margin="normal"
               required
             />
           </div>
@@ -147,18 +147,18 @@ const RoleCreate = () => {
               className="uk-input"
               value={expirationDate}
               onChange={(e) => setExpirationDate(e.target.value)}
-              margin="normal"
-              variant="outlined"
+              //margin="normal"
+              //variant="outlined"
               type="date"
               required
             />
           </div>
         </div>
         <div className="uk-margin">
-          <ComboComponent
+          <AdvancedSearch
             disabled={false}
             pkFieldValue={appId}
-            rellabel="App"
+            //rellabel="App"
             controller="app"
             pk="_id"
             onSelection={getAppSelection}
