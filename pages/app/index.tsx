@@ -11,29 +11,18 @@ export default () => {
         service={"AppService.getApps"}
         pk={"code"}
         clickCallback={() => console.log("Prueba Click Callback")}
-        enableSelect={true} //Pendiente implementar (checkbox a la izquierda de las columnas)
-        selectionType={"single"} // Single or multiple
+        enableSelect={true} 
+        selectionType={"multiple"} // Single or multiple (Validate with propTypes)
         enableCreate={true}
         enableUpdate={true}
         enableDelete={true}
-        enableCache={false} //Pendiente implementar
-        enableExport={false}//{[false, ['csv','xml','json']]} //Pending validate correctly with prop types
-        enablePrint={false} //Pendiente implementar
-        enableSorting={false} //Pendiente implementar
-        enableColumnFilter={false} //Pendiente implementar
+        enableCache={false} //Pending to implement. IDK how I'll implement it yet
+        enableExport={true}//{[false, ['csv','xml','json']]} //Pending validate correctly with prop types
+        enableImport={true}
+        enablePrint={false} //Pending to implement
+        enableSorting={true}
+        enableColumnFilter={true}
         itemsPerPage={[10, 15, 20, 25]}
-        filter={[
-          {
-            parameterName: "code",
-            parameterValue: "",
-            parameterContainer: "query",
-          },
-          {
-            parameterName: "description",
-            parameterValue: "",
-            parameterContainer: "query",
-          },
-        ]} //Pendiente implementar
         columns={[
           { columnName: "code", title: "Código" },
           { columnName: "description", title: "Descripción" },

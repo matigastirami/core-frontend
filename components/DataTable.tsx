@@ -1,32 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-//import serviceCommunication from '../../http/genericComunication'
-//import HashHistory from '../../history/HashHistory'
-//import { trackPromise } from 'react-promise-tracker';
 import classNames from "classnames";
-//import { isMobile } from 'react-device-detect'
 
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Toast } from 'primereact/toast';
-import { Button } from 'primereact/button';
-import { FileUpload } from 'primereact/fileupload';
-import { Rating } from 'primereact/rating';
-import { Toolbar } from 'primereact/toolbar';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber } from 'primereact/inputnumber';
-import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
+import { Toast } from "primereact/toast";
+import { Button } from "primereact/button";
+import { FileUpload } from "primereact/fileupload";
+import { Rating } from "primereact/rating";
+import { Toolbar } from "primereact/toolbar";
+import { InputTextarea } from "primereact/inputtextarea";
+import { RadioButton } from "primereact/radiobutton";
+import { InputNumber } from "primereact/inputnumber";
+import { Dialog } from "primereact/dialog";
+import { InputText } from "primereact/inputtext";
 
 //import './CRUD.component.css';
 
 const CRUDComponent = (props) => {
-
   let [item, setItem] = useState(null);
   let [items, setItems] = useState([]);
   const [itemDialog, setItemDialog] = useState(false);
-
+  const [submitted, setSubmitted] = useState(false);
   const [deleteItemDialog, setDeleteItemDialog] = useState(false);
   const [deleteItemsDialog, setDeleteItemsDialog] = useState(false);
 
@@ -94,13 +89,25 @@ const CRUDComponent = (props) => {
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>
-        <FileUpload mode="basic" accept="image/*" maxFileSize={1000000} /*label="Import"*/ chooseLabel="Import" className="p-mr-2 p-d-inline-block" />
-        <Button
-          label="Export"
-          icon="pi pi-upload"
-          className="p-button-help"
-          onClick={exportCSV}
-        />
+        {
+          props.enableImport &&
+          <FileUpload
+            mode="basic"
+            accept="image/*"
+            maxFileSize={1000000}
+            /*label="Import"*/ chooseLabel="Import"
+            className="p-mr-2 p-d-inline-block"
+          />
+        }
+        {
+          props.enableExport &&
+          <Button
+            label="Export"
+            icon="pi pi-upload"
+            className="p-button-help"
+            onClick={exportCSV}
+          />
+        }
       </React.Fragment>
     );
   };
@@ -109,31 +116,35 @@ const CRUDComponent = (props) => {
     setItem({});
     //setSubmitted(false);
     setItemDialog(true);
-  }
+  };
 
   const leftToolbarTemplate = () => {
     return (
       <React.Fragment>
-        <Button
-          label="New"
-          icon="pi pi-plus"
-          className="p-button-success p-mr-2"
-          onClick={openNew}
-        />
-        <Button
-          label="Delete"
-          icon="pi pi-trash"
-          className="p-button-danger"
-          onClick={confirmDeleteSelected}
-          disabled={!selectedItems || !selectedItems.length}
-        />
+        {props.enableCreate && (
+          <Button
+            label="New"
+            icon="pi pi-plus"
+            className="p-button-success p-mr-2"
+            onClick={openNew}
+          />
+        )}
+        {props.enableDelete && props.enableSelect && props.selectionType === 'multiple' && (
+          <Button
+            label="Delete"
+            icon="pi pi-trash"
+            className="p-button-danger"
+            onClick={confirmDeleteSelected}
+            disabled={!selectedItems || !selectedItems.length}
+          />
+        )}
       </React.Fragment>
     );
   };
 
   const confirmDeleteSelected = () => {
     setDeleteItemsDialog(true);
-}
+  };
 
   const editItem = (item) => {
     setItem({ ...item });
@@ -148,19 +159,137 @@ const CRUDComponent = (props) => {
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-        <Button
-          icon="pi pi-pencil"
-          className="p-button-rounded p-button-success p-mr-2"
-          onClick={() => editItem(rowData)}
-        />
-        <Button
-          icon="pi pi-trash"
-          className="p-button-rounded p-button-warning"
-          onClick={() => confirmDeleteItem(rowData)}
-        />
+        {props.enableUpdate && (
+          <Button
+            icon="pi pi-pencil"
+            className="p-button-rounded p-button-success p-mr-2"
+            onClick={() => editItem(rowData)}
+          />
+        )}
+        {props.enableDelete && (
+          <Button
+            icon="pi pi-trash"
+            className="p-button-rounded p-button-warning"
+            onClick={() => confirmDeleteItem(rowData)}
+          />
+        )}
       </React.Fragment>
     );
   };
+
+  const hideDialog = () => {
+    setSubmitted(false);
+    setItemDialog(false);
+  };
+
+  const onInputChange = (e, name) => {
+    const val = (e.target && e.target.value) || "";
+    let _product = { ...item };
+    _product[`${name}`] = val;
+
+    setItem(_product);
+  };
+
+  const onInputNumberChange = (e, name) => {
+    const val = e.value || 0;
+    let _product = { ...item };
+    _product[`${name}`] = val;
+
+    setItem(_product);
+  };
+
+  const saveProduct = () => {
+    setSubmitted(true);
+
+    // TODO: call item service method
+
+    alert("Pending implement");
+  };
+
+  const itemDialogFooter = (
+    <React.Fragment>
+      <Button
+        label="Cancel"
+        icon="pi pi-times"
+        className="p-button-text"
+        onClick={hideDialog}
+      />
+      <Button
+        label="Save"
+        icon="pi pi-check"
+        className="p-button-text"
+        onClick={saveProduct}
+      />
+    </React.Fragment>
+  );
+
+  const hideDeleteItemDialog = () => {
+    setDeleteItemDialog(false);
+  };
+
+  const hideDeleteItemsDialog = () => {
+    setDeleteItemsDialog(false);
+  };
+
+  const deleteItem = () => {
+    let _products = items.filter((val) => val.id !== item.id);
+    setItem(_products);
+    setDeleteItemDialog(false);
+    setItem({}); //Find the way to create a generic empty object (Perhaps asking for a mandatory fields config)
+    toast.current.show({
+      severity: "success",
+      summary: "Successful",
+      detail: "Product Deleted",
+      life: 3000,
+    });
+  };
+
+  const deleteSelectedItems = () => {
+    let _products = items.filter((val) => !selectedItems.includes(val));
+    setItems(_products);
+    setDeleteItemsDialog(false);
+    setSelectedItems(null);
+    toast.current.show({
+      severity: "success",
+      summary: "Successful",
+      detail: "Products Deleted",
+      life: 3000,
+    });
+  };
+
+  const deleteItemDialogFooter = (
+    <React.Fragment>
+      <Button
+        label="No"
+        icon="pi pi-times"
+        className="p-button-text"
+        onClick={hideDeleteItemDialog}
+      />
+      <Button
+        label="Yes"
+        icon="pi pi-check"
+        className="p-button-text"
+        onClick={deleteItem}
+      />
+    </React.Fragment>
+  );
+
+  const deleteItemsDialogFooter = (
+    <React.Fragment>
+      <Button
+        label="No"
+        icon="pi pi-times"
+        className="p-button-text"
+        onClick={hideDeleteItemsDialog}
+      />
+      <Button
+        label="Yes"
+        icon="pi pi-check"
+        className="p-button-text"
+        onClick={deleteSelectedItems}
+      />
+    </React.Fragment>
+  );
 
   return (
     <div>
@@ -170,7 +299,7 @@ const CRUDComponent = (props) => {
         className="p-mb-4"
         left={leftToolbarTemplate}
         right={rightToolbarTemplate}
-      ></Toolbar>
+      />
 
       <DataTable
         value={items}
@@ -188,20 +317,75 @@ const CRUDComponent = (props) => {
         columnResizeMode="fit"
       >
         {props.enableSelect && (
-          <Column selectionMode="multiple" headerStyle={{ width: "3em" }} />
+          <Column
+            selectionMode={props.selectionType}
+            headerStyle={{ width: "3em" }}
+          />
         )}
         {props.columns.map((col, i) => (
           <Column
             key={`col-config-${i}`}
             field={col.columnName}
             header={col.title}
-            sortable
-            filter
+            sortable={props.enableSorting}
+            filter={props.enableColumnFilter}
             filterPlaceholder={`Search by ${col.title}`}
           />
         ))}
         <Column body={actionBodyTemplate}></Column>
       </DataTable>
+
+      <Dialog
+        visible={itemDialog}
+        style={{ width: "450px" }}
+        header="Item Details"
+        modal
+        className="p-fluid"
+        footer={itemDialogFooter}
+        onHide={hideDialog}
+      >
+        {/* TODO: Replace the form below for a dynamic form */}
+      </Dialog>
+
+      <Dialog
+        visible={deleteItemDialog}
+        style={{ width: "450px" }}
+        header="Confirm"
+        modal
+        footer={deleteItemDialogFooter}
+        onHide={hideDeleteItemDialog}
+      >
+        <div className="confirmation-content">
+          <i
+            className="pi pi-exclamation-triangle p-mr-3"
+            style={{ fontSize: "2rem" }}
+          />
+          {item && (
+            <span>
+              Are you sure you want to delete <b>{item.name}</b>?
+            </span>
+          )}
+        </div>
+      </Dialog>
+
+      <Dialog
+        visible={deleteItemsDialog}
+        style={{ width: "450px" }}
+        header="Confirm"
+        modal
+        footer={deleteItemsDialogFooter}
+        onHide={hideDeleteItemsDialog}
+      >
+        <div className="confirmation-content">
+          <i
+            className="pi pi-exclamation-triangle p-mr-3"
+            style={{ fontSize: "2rem" }}
+          />
+          {item && (
+            <span>Are you sure you want to delete the selected Items?</span>
+          )}
+        </div>
+      </Dialog>
     </div>
   );
 };
@@ -217,11 +401,11 @@ CRUDComponent.propTypes = {
   enableUpdate: PropTypes.bool.isRequired,
   enableDelete: PropTypes.bool.isRequired,
   enableCache: PropTypes.bool.isRequired, // Pending checking out when converting to PWA
-  filter: PropTypes.array.isRequired,
   columns: PropTypes.array.isRequired,
   additionalActions: PropTypes.array,
   onConfirmRegSelection: PropTypes.func,
   enableExport: PropTypes.bool,
+  enableImport: PropTypes.bool,
   enablePrint: PropTypes.bool,
   enableSorting: PropTypes.bool,
   enableColumnFilter: PropTypes.bool,
