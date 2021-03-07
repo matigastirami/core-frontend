@@ -31,7 +31,7 @@ const UsersComponent = (props) => {
             <DataTable
                 //crudTitle="Gestión de usuarios"
                 class={''}
-                controller={'user'}
+                service={'UserService.'}
                 pk={'_id'}
                 clickCallback={() => console.log('Prueba Click Callback')}
                 enableSelect={true} //Implementado, pero todavia no hago nada con los seleccionados

@@ -8,19 +8,20 @@ export default () => {
       <DataTable
         //crudTitle="Gestión de apps"
         class={""}
-        controller={"app"}
-        pk={"_id"}
+        service={"AppService.getApps"}
+        pk={"code"}
         clickCallback={() => console.log("Prueba Click Callback")}
-        enableSelect={false} //Pendiente implementar (checkbox a la izquierda de las columnas)
+        enableSelect={true} //Pendiente implementar (checkbox a la izquierda de las columnas)
+        selectionType={"single"} // Single or multiple
         enableCreate={true}
         enableUpdate={true}
         enableDelete={true}
         enableCache={false} //Pendiente implementar
-        //enableExport={[false, ['csv','xml','json']]} //Pendiente implementar
-        //enablePrint={false} //Pendiente implementar
-        //enableSorting={false} //Pendiente implementar
-        //enableColumnFilter={false} //Pendiente implementar
-        //itemsPerPage={[10, 15, 20, 25]}
+        enableExport={false}//{[false, ['csv','xml','json']]} //Pending validate correctly with prop types
+        enablePrint={false} //Pendiente implementar
+        enableSorting={false} //Pendiente implementar
+        enableColumnFilter={false} //Pendiente implementar
+        itemsPerPage={[10, 15, 20, 25]}
         filter={[
           {
             parameterName: "code",
