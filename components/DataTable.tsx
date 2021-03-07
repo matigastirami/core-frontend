@@ -15,13 +15,12 @@ import { InputNumber } from "primereact/inputnumber";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 
-//import './CRUD.component.css';
-
 const CRUDComponent = (props) => {
   let [item, setItem] = useState(null);
   let [items, setItems] = useState([]);
   const [itemDialog, setItemDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  let [operation, setOperation] = useState(null);
   const [deleteItemDialog, setDeleteItemDialog] = useState(false);
   const [deleteItemsDialog, setDeleteItemsDialog] = useState(false);
 
@@ -31,37 +30,30 @@ const CRUDComponent = (props) => {
   const toast = useRef(null);
 
   useEffect(() => {
-    const { service } = props;
+    const { service, methods } = props;
 
-    let [svcName, method] = service.split(".");
+    callServiceMethod(service, methods.list).then((data) => setItems(data));
 
-    Service(svcName)
-      .then((Serv) => {
-        let dataFetcher = new Serv();
-        return dataFetcher[method]();
-      })
-      .then((data) => setItems(data));
+    setItem(getEmptyItem());
 
-    /*if (isFirstRun.current) {
-            isFirstRun.current = false;
-            return;
-        }*/
-
-    //console.log('filter changed', props.filter);
-
-    /*async function fetchAll(){
-            let processedFilters = await processFilters()
-            let dataLoaded = await getData()
-        }*/
-
-    //fetchAll()
   }, [props.columns]);
 
-  const Service = async (service) => {
-    let instance = (await import(`../services/${service}`)).default;
+  const callServiceMethod = async (service, method) => {
+    let instance = new ((await import(`../services/${service}`)).default)();
 
-    return instance;
+    return instance[method]();
   };
+
+  const getEmptyItem = () => {
+    
+    let emptyObj = {};
+
+    for(let itemField of props.columns) {
+      emptyObj[itemField.columnName] = '';
+    }
+
+    return emptyObj;
+  }
 
   const exportCSV = () => {
     dt.current.exportCSV();
@@ -116,6 +108,7 @@ const CRUDComponent = (props) => {
     setItem({});
     //setSubmitted(false);
     setItemDialog(true);
+    setOperation('Create');
   };
 
   const leftToolbarTemplate = () => {
@@ -149,11 +142,12 @@ const CRUDComponent = (props) => {
   const editItem = (item) => {
     setItem({ ...item });
     setItemDialog(true);
+    setOperation('Edit');
   };
 
   const confirmDeleteItem = (Item) => {
     setItem(Item);
-    setItemDialog(true);
+    setDeleteItemDialog(true);
   };
 
   const actionBodyTemplate = (rowData) => {
@@ -198,12 +192,22 @@ const CRUDComponent = (props) => {
     setItem(_product);
   };
 
-  const saveProduct = () => {
+  const saveItem = async () => {
     setSubmitted(true);
 
-    // TODO: call item service method
+    let { service, methods: { post, put } } = props;
 
-    alert("Pending implement");
+    try {
+
+      let savedOrUpdated = await callServiceMethod(service, operation === 'Create' ? post : put);
+
+      console.log("Called method: ", operation === 'Create' ? post : put);
+      
+      alert('Successfully saved!');
+    } 
+    catch (error) {
+      console.error("There was an error while trying to save the item: ", error);  
+    }
   };
 
   const itemDialogFooter = (
@@ -218,7 +222,7 @@ const CRUDComponent = (props) => {
         label="Save"
         icon="pi pi-check"
         className="p-button-text"
-        onClick={saveProduct}
+        onClick={saveItem}
       />
     </React.Fragment>
   );
@@ -231,30 +235,67 @@ const CRUDComponent = (props) => {
     setDeleteItemsDialog(false);
   };
 
-  const deleteItem = () => {
-    let _products = items.filter((val) => val.id !== item.id);
-    setItem(_products);
-    setDeleteItemDialog(false);
-    setItem({}); //Find the way to create a generic empty object (Perhaps asking for a mandatory fields config)
-    toast.current.show({
-      severity: "success",
-      summary: "Successful",
-      detail: "Product Deleted",
-      life: 3000,
-    });
+  const deleteItem = async () => {
+
+    //state.item contains the item to delete
+
+    let { service, methods } = props;
+
+    try {
+
+      let deleted = await callServiceMethod(service, methods.delete);
+
+      console.log(deleted);
+
+      let _items = items.filter((val) => val.id !== item.id);
+      setItem(_items);
+      setDeleteItemDialog(false);
+      setItem(getEmptyItem()); //Find the way to create a generic empty object (Perhaps asking for a mandatory fields config)
+      toast.current.show({
+        severity: "success",
+        summary: "Successful",
+        detail: "Product Deleted",
+        life: 3000,
+      });
+      
+      alert('Successfully deleted!');
+    } 
+    catch (error) {
+      console.error("There was an error while trying to save the item: ", error);  
+    }
+
+    
   };
 
-  const deleteSelectedItems = () => {
-    let _products = items.filter((val) => !selectedItems.includes(val));
-    setItems(_products);
-    setDeleteItemsDialog(false);
-    setSelectedItems(null);
-    toast.current.show({
-      severity: "success",
-      summary: "Successful",
-      detail: "Products Deleted",
-      life: 3000,
-    });
+  const deleteSelectedItems = async () => {
+
+    let { service, methods } = props;
+
+    try {
+
+      let deleted = await callServiceMethod(service, methods.delete);
+
+      console.log(deleted);
+
+      let _items = items.filter((val) => val.id !== item.id);
+      let _products = items.filter((val) => !selectedItems.includes(val));
+
+      setItems(_products);
+      setDeleteItemsDialog(false);
+      setSelectedItems(null);
+      toast.current.show({
+        severity: "success",
+        summary: "Successful",
+        detail: "Products Deleted",
+        life: 3000,
+      });
+      
+      alert('Successfully deleted!');
+    } 
+    catch (error) {
+      console.error("There was an error while trying to save the item: ", error);  
+    }
+    
   };
 
   const deleteItemDialogFooter = (
@@ -303,6 +344,7 @@ const CRUDComponent = (props) => {
 
       <DataTable
         value={items}
+        onRowClick={props.clickCallback ?? null}
         //header={header}
         ref={dt}
         selection={selectedItems}
@@ -322,7 +364,7 @@ const CRUDComponent = (props) => {
             headerStyle={{ width: "3em" }}
           />
         )}
-        {props.columns.map((col, i) => (
+        {props.columns.filter(col => col.show === true).map((col, i) => 
           <Column
             key={`col-config-${i}`}
             field={col.columnName}
@@ -331,20 +373,31 @@ const CRUDComponent = (props) => {
             filter={props.enableColumnFilter}
             filterPlaceholder={`Search by ${col.title}`}
           />
-        ))}
+        )}
         <Column body={actionBodyTemplate}></Column>
       </DataTable>
 
       <Dialog
         visible={itemDialog}
         style={{ width: "450px" }}
-        header="Item Details"
+        header={`${operation} item`}
         modal
         className="p-fluid"
         footer={itemDialogFooter}
         onHide={hideDialog}
       >
-        {/* TODO: Replace the form below for a dynamic form */}
+        {
+          props.columns.map(field => 
+            field.show === true && item &&
+            <InputText 
+              key={`crud-field-${field.columnName}`}
+              value={item[field.columnName]} 
+              onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
+              label={field.title}
+              placeholder={field.title}
+            />
+          )
+        }
       </Dialog>
 
       <Dialog
@@ -362,7 +415,7 @@ const CRUDComponent = (props) => {
           />
           {item && (
             <span>
-              Are you sure you want to delete <b>{item.name}</b>?
+              Are you sure you want to delete the selected item?
             </span>
           )}
         </div>
@@ -394,6 +447,13 @@ CRUDComponent.propTypes = {
   //classes: PropTypes.object.isRequired,
   class: PropTypes.string,
   service: PropTypes.string.isRequired,
+  methods: PropTypes.shape({
+    list: PropTypes.string.isRequired,
+    get: PropTypes.string,
+    post: PropTypes.string,
+    put: PropTypes.string,
+    delete: PropTypes.string
+  }),
   pk: PropTypes.string.isRequired,
   clickCallback: PropTypes.func,
   enableSelect: PropTypes.bool.isRequired,
@@ -406,11 +466,11 @@ CRUDComponent.propTypes = {
   onConfirmRegSelection: PropTypes.func,
   enableExport: PropTypes.bool,
   enableImport: PropTypes.bool,
-  enablePrint: PropTypes.bool,
+  //enablePrint: PropTypes.bool,
   enableSorting: PropTypes.bool,
   enableColumnFilter: PropTypes.bool,
   itemsPerPage: PropTypes.arrayOf(PropTypes.number),
-  selectionType: PropTypes.string,
+  selectionType: PropTypes.oneOf(['single', 'multiple'])
 };
 
 export default CRUDComponent;

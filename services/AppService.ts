@@ -1,3 +1,4 @@
+import IApp from '../interfaces/IApp';
 import App from '../interfaces/IApp';
 
 export default class AppService {
@@ -25,5 +26,32 @@ export default class AppService {
                 url: 'https://mock2.com'
             }
         ]
+    }
+
+    public async createApp(data: IApp): Promise<any> {
+        return {
+            result: true,
+            data: {
+                message: 'App successfully created'
+            }
+        };
+    }
+
+    public async editApp(data: IApp): Promise<any> {
+        return {
+            result: true,
+            data: {
+                message: 'App successfully edited'
+            }
+        };
+    }
+
+    public async deleteApp(data: IApp): Promise<any> {
+        return {
+            result: true,
+            data: {
+                message: 'App successfully deleted'
+            }
+        };
     }
 }
