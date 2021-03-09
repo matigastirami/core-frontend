@@ -29,7 +29,7 @@ export default () => {
         //enablePrint={false} //Pending to implement
         enableSorting={true}
         enableColumnFilter={true}
-        itemsPerPage={[10, 15, 20, 25]}
+        itemsPerPage={[10, 15, 20, 25]} //TODO: revise this prop
         columns={[
           { columnName: "_id", show: false, editable: false, type: 'text' },
           { columnName: "code", title: "Código", show: true, editable: true, type: 'text' },

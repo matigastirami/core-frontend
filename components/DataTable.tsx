@@ -38,10 +38,10 @@ const CRUDComponent = (props) => {
 
   }, [props.columns]);
 
-  const callServiceMethod = async (service, method) => {
+  const callServiceMethod = async (service: string, method: string, data?: any) => {
     let instance = new ((await import(`../services/${service}`)).default)();
 
-    return instance[method]();
+    return data ? instance[method](data) : instance[method]();
   };
 
   const getEmptyItem = () => {
@@ -199,11 +199,16 @@ const CRUDComponent = (props) => {
 
     try {
 
-      let savedOrUpdated = await callServiceMethod(service, operation === 'Create' ? post : put);
+      let savedOrUpdated = await callServiceMethod(service, operation === 'Create' ? post : put, { ...item });
 
-      console.log("Called method: ", operation === 'Create' ? post : put);
+      console.log("Called method: ", item);
       
-      alert('Successfully saved!');
+      toast.current.show({
+        severity: "success",
+        summary: "Successful",
+        detail: `Successfully ${operation === 'Create' ? 'saved' : 'edited'}!`,
+        life: 3000,
+      });
     } 
     catch (error) {
       console.error("There was an error while trying to save the item: ", error);  
@@ -248,7 +253,7 @@ const CRUDComponent = (props) => {
       console.log(deleted);
 
       let _items = items.filter((val) => val.id !== item.id);
-      setItem(_items);
+      setItems(_items);
       setDeleteItemDialog(false);
       setItem(getEmptyItem()); //Find the way to create a generic empty object (Perhaps asking for a mandatory fields config)
       toast.current.show({
@@ -258,7 +263,6 @@ const CRUDComponent = (props) => {
         life: 3000,
       });
       
-      alert('Successfully deleted!');
     } 
     catch (error) {
       console.error("There was an error while trying to save the item: ", error);  
@@ -289,8 +293,6 @@ const CRUDComponent = (props) => {
         detail: "Products Deleted",
         life: 3000,
       });
-      
-      alert('Successfully deleted!');
     } 
     catch (error) {
       console.error("There was an error while trying to save the item: ", error);  
@@ -350,8 +352,10 @@ const CRUDComponent = (props) => {
         selection={selectedItems}
         onSelectionChange={(e) => setSelectedItems(e.value)}
         paginator
+        rows={props.itemsPerPage ? props.itemsPerPage[0] : 10} 
+        rowsPerPageOptions={props.itemsPerPage}
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Items"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} items"
         paginatorLeft={paginatorLeft}
         paginatorRight={paginatorRight}
         dataKey={props.pk}
@@ -389,13 +393,16 @@ const CRUDComponent = (props) => {
         {
           props.columns.map(field => 
             field.show === true && item &&
-            <InputText 
-              key={`crud-field-${field.columnName}`}
-              value={item[field.columnName]} 
-              onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
-              label={field.title}
-              placeholder={field.title}
-            />
+            <div className="p-field">
+              <label htmlFor="name">{field.title}</label>
+              <InputText 
+                key={`crud-field-${field.columnName}`}
+                value={item[field.columnName]} 
+                onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
+                label={field.title}
+                placeholder={field.title}
+              />
+            </div>
           )
         }
       </Dialog>
