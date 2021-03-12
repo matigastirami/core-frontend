@@ -54,4 +54,13 @@ export default class AppService {
             }
         };
     }
+
+    public async importApps(data): Promise<any> {
+        return {
+            result: true,
+            data: {
+                message: 'File successfully imported'
+            }
+        };
+    }
 }

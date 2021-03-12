@@ -78,6 +78,25 @@ const CRUDComponent = (props) => {
     </div>
   );
 
+  const handleUpload = async (event) => {
+    
+    console.log(event.files);
+
+    const { service, methods } = props;
+
+    try {
+
+      let response = await callServiceMethod(service, methods.import, event.files);
+
+      console.log("Success: ", response);
+
+    } catch (error) {
+
+      console.error("There was an error importing the file: ", error);
+
+    }
+  }
+
   const rightToolbarTemplate = () => {
     return (
       <React.Fragment>
@@ -85,10 +104,12 @@ const CRUDComponent = (props) => {
           props.enableImport &&
           <FileUpload
             mode="basic"
-            accept="image/*"
+            accept="text/csv"
             maxFileSize={1000000}
             /*label="Import"*/ chooseLabel="Import"
             className="p-mr-2 p-d-inline-block"
+            customUpload
+            uploadHandler={handleUpload}
           />
         }
         {
@@ -158,15 +179,28 @@ const CRUDComponent = (props) => {
             icon="pi pi-pencil"
             className="p-button-rounded p-button-success p-mr-2"
             onClick={() => editItem(rowData)}
+            tooltip="Edit item"
           />
         )}
         {props.enableDelete && (
           <Button
             icon="pi pi-trash"
-            className="p-button-rounded p-button-warning"
+            className="p-button-rounded p-button-danger p-mr-2"
             onClick={() => confirmDeleteItem(rowData)}
+            tooltip="Delete item"
           />
         )}
+        {
+          (props.additionalActions ?? []).map((act, i) => 
+            <Button
+              key={`additional_act_${i}`}
+              icon={act.icon}
+              className={`p-button-rounded p-mr-2 ${act.type && act.type != 'primary' ? `p-button-${act.type}` : ''}`}
+              onClick={act.callback}
+              tooltip={act.tooltip}
+            />
+          )
+        }
       </React.Fragment>
     );
   };
@@ -393,10 +427,9 @@ const CRUDComponent = (props) => {
         {
           props.columns.map(field => 
             field.show === true && item &&
-            <div className="p-field">
+            <div className="p-field" key={`crud-field-${field.columnName}`}>
               <label htmlFor="name">{field.title}</label>
               <InputText 
-                key={`crud-field-${field.columnName}`}
                 value={item[field.columnName]} 
                 onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
                 label={field.title}
@@ -459,7 +492,8 @@ CRUDComponent.propTypes = {
     get: PropTypes.string,
     post: PropTypes.string,
     put: PropTypes.string,
-    delete: PropTypes.string
+    delete: PropTypes.string, 
+    import: PropTypes.string
   }),
   pk: PropTypes.string.isRequired,
   clickCallback: PropTypes.func,

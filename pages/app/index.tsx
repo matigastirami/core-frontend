@@ -14,7 +14,8 @@ export default () => {
           get: 'getApp',
           post: 'createApp',
           put: 'editApp',
-          delete: 'deleteApp'
+          delete: 'deleteApp',
+          import: 'importApps'
         }}
         pk={"code"}
         clickCallback={() => console.log("Test click callback")}
@@ -24,12 +25,12 @@ export default () => {
         enableUpdate={true}
         enableDelete={true}
         enableCache={false} //Pending to implement. IDK how I'll implement it yet
-        enableExport={true}//{[false, ['csv','xml','json']]} //Pending validate correctly with prop types
+        enableExport={true}
         enableImport={true}
         //enablePrint={false} //Pending to implement
         enableSorting={true}
         enableColumnFilter={true}
-        itemsPerPage={[10, 15, 20, 25]} //TODO: revise this prop
+        itemsPerPage={[10, 15, 20, 25]}
         columns={[
           { columnName: "_id", show: false, editable: false, type: 'text' },
           { columnName: "code", title: "Código", show: true, editable: true, type: 'text' },
@@ -39,8 +40,9 @@ export default () => {
         additionalActions={[
           {
             tooltip: "Información",
-            icon: "fas fa-info-circle",
+            icon: "pi pi-info-circle",
             callback: () => console.log("OK"),
+            type: "Info"
           },
         ]}
       />
