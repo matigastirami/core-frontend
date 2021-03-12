@@ -250,9 +250,9 @@ const CRUDComponent = (props) => {
 
       let deleted = await callServiceMethod(service, methods.delete);
 
-      console.log(deleted);
+      console.log(item);
 
-      let _items = items.filter((val) => val.id !== item.id);
+      let _items = items.filter((val) => val[props.pk] !== item[props.pk]);
       setItems(_items);
       setDeleteItemDialog(false);
       setItem(getEmptyItem()); //Find the way to create a generic empty object (Perhaps asking for a mandatory fields config)
@@ -281,10 +281,10 @@ const CRUDComponent = (props) => {
 
       console.log(deleted);
 
-      let _items = items.filter((val) => val.id !== item.id);
-      let _products = items.filter((val) => !selectedItems.includes(val));
+      //let _items = items.filter((val) => val.id !== item.id);
+      let _items = items.filter((val) => !selectedItems.includes(val));
 
-      setItems(_products);
+      setItems(_items);
       setDeleteItemsDialog(false);
       setSelectedItems(null);
       toast.current.show({
