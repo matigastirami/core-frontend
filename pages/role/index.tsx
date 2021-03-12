@@ -9,7 +9,7 @@ const RoleComponent = () => {
   return (
     <div>
       <h1>Consulta de roles</h1>
-      <DataTable
+      {/* <DataTable
         //crudTitle="Gestión de roles"
         class={""}
         controller={"role"}
@@ -48,7 +48,7 @@ const RoleComponent = () => {
             callback: () => verRol(),
           },
         ]}
-      />
+      /> */}
     </div>
   );
 };

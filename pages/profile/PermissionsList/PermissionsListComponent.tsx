@@ -13,7 +13,7 @@ const PermissionsulComponent = (props) => {
             <h1>{props.title}</h1>
             <ul id="appAccordion" data-uk-accordion >
             {   
-                props.items.map((item, i) => {
+                (props.items ?? []).map((item, i) => {
                     return (
                         <li key={i}>
                             <a className="uk-accordion-title" href="#">

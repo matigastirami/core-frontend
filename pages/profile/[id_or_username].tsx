@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 //import service from "../../services/userService";
 //import userService from "../Users/Users.service"; //Sacar este user service duplicado, quedó mal, meter todo en ../../services/userService
 
-import ProfileImageComponent from "./ProfileImage/ProfileImageComponent";
-import PermissionsListComponent from "./PermissionsList/PermissionsListComponent";
+//import ProfileImageComponent from "./ProfileImage/ProfileImageComponent";
+//import PermissionsListComponent from "./PermissionsList/PermissionsListComponent";
 
 const MyProfile = (props) => {
   let [username, setUsername] = useState("");
@@ -99,7 +99,7 @@ const MyProfile = (props) => {
       <div className="uk-card uk-card-default uk-card-body uk-width-3-6">
         <form className="uk-form-horizontal">
           <h1>Mis datos personales</h1>
-          <ProfileImageComponent disabled={!editProfileMode} />
+          {/* <ProfileImageComponent disabled={!editProfileMode} /> */}
           <div className="uk-margin">
             <label className="uk-form-label">Nombre de usuario</label>
             <div className="uk-form-controls">
@@ -188,11 +188,11 @@ const MyProfile = (props) => {
       </div>
       <br />
       <div className="uk-card uk-card-default uk-card-body uk-width-3-6">
-        <PermissionsListComponent
+        {/* <PermissionsListComponent
           //title="Roles y permisos"
           items={permissions || []}
           //getSelectedFile={() => {}}
-        />
+        /> */}
       </div>
     </>
   );

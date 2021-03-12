@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 //import HashHistory from '../../history/HashHistory'
 //import http from '../../http/genericComunication'
 import PropTypes from 'prop-types';
-import AdvancedSearch from '../../components/AdvancedSearchField';
+//import AdvancedSearch from '../../components/AdvancedSearchField';
 //import UIkit from 'uikit'
 
 //import ComboComponent from '../ComboComponent/ComboComponent'
@@ -194,7 +194,7 @@ const UserCreateComponent = (props) => {
                     />
                     </div>
                 </div>
-                <AdvancedSearch 
+                {/* <AdvancedSearch 
                     pkFieldValue={appId}
                     disabled={false}
                     //rellabel="Aplicación"
@@ -227,7 +227,7 @@ const UserCreateComponent = (props) => {
                         {'parameterName': 'description', 'parameterValue': '', 'parameterContainer': 'query'},
                         {'parameterName': 'appId', 'parameterValue': appId || '', 'parameterContainer': 'query'},
                     ]}
-                />
+                /> */}
 
             </form>
             <a className="uk-button uk-button-default uk-width-1-2" href="/#/users" >

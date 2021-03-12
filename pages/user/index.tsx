@@ -28,7 +28,7 @@ const UsersComponent = (props) => {
     return (
         <div>
             <h1>Consulta de usuarios</h1>
-            <DataTable
+            {/* <DataTable
                 //crudTitle="Gestión de usuarios"
                 class={''}
                 service={'UserService.'}
@@ -57,7 +57,7 @@ const UsersComponent = (props) => {
                     { tooltip: 'Información', icon: "fas fa-info-circle", callback: verUsuario },
                     { tooltip: 'Resetear contraseña y enviar por email', icon: "fas fa-envelope", callback: verUsuario }
                 ]}
-            />
+            /> */}
         </div>
     )
 }

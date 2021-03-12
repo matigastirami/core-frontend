@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 
 import moment from "moment";
 
-import AdvancedSearch from "../../components/AdvancedSearchField";
+//import AdvancedSearch from "../../components/AdvancedSearchField";
 
 const RoleCreate = () => {
   let [action, setAction] = useState("");
@@ -155,7 +155,7 @@ const RoleCreate = () => {
           </div>
         </div>
         <div className="uk-margin">
-          <AdvancedSearch
+          {/* <AdvancedSearch
             disabled={false}
             pkFieldValue={appId}
             //rellabel="App"
@@ -163,8 +163,8 @@ const RoleCreate = () => {
             pk="_id"
             onSelection={getAppSelection}
             columns={[{ columnName: "code", title: "Código" }]}
-            filter={[]}
-          />
+            filter={[]} 
+          />*/}
         </div>
       </form>
       <div>
