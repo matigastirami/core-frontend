@@ -14,6 +14,7 @@ import { RadioButton } from "primereact/radiobutton";
 import { InputNumber } from "primereact/inputnumber";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { Dropdown } from 'primereact/dropdown';
 
 const CRUDComponent = (props) => {
   let [item, setItem] = useState(null);
@@ -368,6 +369,75 @@ const CRUDComponent = (props) => {
     </React.Fragment>
   );
 
+  const _renderEditionForm = () => {
+    return props.columns.map(field => {
+      if(field.show === true && item) {
+        switch(field.type) {
+          case 'text': 
+            return (
+              <div className="p-field" key={`crud-field-${field.columnName}`}>
+                <label htmlFor="name">{field.title}</label>
+                <InputText 
+                  value={item[field.columnName]} 
+                  onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
+                  label={field.title}
+                  placeholder={field.title}
+                />
+              </div>
+            )
+          case 'integer':
+            return (
+              <InputNumber 
+                value={item[field.columnName]} 
+                onChange={(e) => setItem({ ...item, [field.columnName]: e.value })} 
+                mode="decimal"
+                minFractionDigits={0}
+              />
+            )
+          case 'decimal':
+            return (
+              <InputNumber 
+                value={item[field.columnName]} 
+                onChange={(e) => setItem({ ...item, [field.columnName]: e.value })} 
+                mode="decimal"
+                minFractionDigits={field.minFractionDigits}
+                maxFractionDigits={field.maxFractionDigits}
+              />
+            )
+          case 'currency':
+            return (
+              <InputNumber 
+                value={item[field.columnName]} 
+                onChange={(e) => setItem({ ...item, [field.columnName]: e.value })} 
+                mode="currency"
+                currency={field.currencyCode}
+              />
+            )
+          case 'text-area':
+            return (
+              <InputTextarea 
+                value={item[field.columnName]} 
+                onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
+              />
+            )
+          case 'select':
+            return (
+              <Dropdown 
+                value={item[field.columnName]} 
+                options={[{ label: 'test', value: 'TEST' }]} 
+                onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
+                placeholder={field.title}
+                filter 
+                showClear
+              />
+            )
+        }
+      }
+    }
+      
+    )
+  }
+
   return (
     <div>
       <Toast ref={toast} />
@@ -417,27 +487,16 @@ const CRUDComponent = (props) => {
 
       <Dialog
         visible={itemDialog}
-        style={{ width: "450px" }}
+        style={{ width: "50vw" }}
         header={`${operation} item`}
         modal
         className="p-fluid"
         footer={itemDialogFooter}
         onHide={hideDialog}
+        maximizable
+        contentStyle={{ height: "50vw" }}
       >
-        {
-          props.columns.map(field => 
-            field.show === true && item &&
-            <div className="p-field" key={`crud-field-${field.columnName}`}>
-              <label htmlFor="name">{field.title}</label>
-              <InputText 
-                value={item[field.columnName]} 
-                onChange={(e) => setItem({ ...item, [field.columnName]: e.target["value"] })} 
-                label={field.title}
-                placeholder={field.title}
-              />
-            </div>
-          )
-        }
+        {_renderEditionForm()}
       </Dialog>
 
       <Dialog

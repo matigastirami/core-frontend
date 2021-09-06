@@ -35,7 +35,7 @@ export default () => {
           { columnName: "_id", show: false, editable: false, type: 'text' },
           { columnName: "code", title: "Código", show: true, editable: true, type: 'text' },
           { columnName: "description", title: "Descripción", show: true, editable: true, type: 'text' },
-          { columnName: "url", title: "URL", show: true, editable: true, type: 'text' },
+          { columnName: "url", title: "URL", show: true, editable: true, type: 'select' },
         ]}
         additionalActions={[
           {
